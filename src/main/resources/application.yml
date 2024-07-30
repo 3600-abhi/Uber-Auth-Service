@@ -1,0 +1,16 @@
+server:
+  port: 8001
+
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/uber_db_local
+    username: root
+    password: root
+  jpa:
+    show-sql: true # query will be logged to our console based on the ORM fn we will invoked
+    hibernate:
+      ddl-auto: update # hibernate can control the DDL of the DB
+    properties: # added spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true for enabling lazy loading
+      hibernate:
+        enable_lazy_load_no_trans: true
