@@ -6,8 +6,6 @@ custom:
   jwt:
     expiry: 3600 # In seconds
     secret: axisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxis
-  cookie:
-    expiry: 3600 # In seconds
 
 spring:
   datasource:

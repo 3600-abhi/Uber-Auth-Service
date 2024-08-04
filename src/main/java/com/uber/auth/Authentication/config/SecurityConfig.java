@@ -1,6 +1,8 @@
 package com.uber.auth.Authentication.config;
 
+import com.uber.auth.Authentication.filters.JwtAuthFilter;
 import com.uber.auth.Authentication.services.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -20,13 +23,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 public class SecurityConfig implements WebMvcConfigurer {
 
+    @Autowired
+    private JwtAuthFilter jwtAuthFilter;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.csrf(csrf -> csrf.disable())
                            .cors(cors -> cors.disable())
                            .authorizeHttpRequests(auth ->
                                    auth.requestMatchers("/api/v1/auth/signup/*").permitAll()
-                                       .requestMatchers("/api/v1/auth/signin/*").permitAll())
+                                       .requestMatchers("/api/v1/auth/signin/*").permitAll()
+                                       .requestMatchers("/api/v1/auth/validate").permitAll())
+                           .authorizeHttpRequests((auth -> auth.requestMatchers("/api/v1/auth/validate").authenticated()))
+                           .authenticationProvider(authenticationProvider())
+                           .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                            .build();
     }
 

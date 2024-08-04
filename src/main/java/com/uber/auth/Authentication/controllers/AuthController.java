@@ -5,6 +5,8 @@ import com.uber.auth.Authentication.dtos.AuthResponseDto;
 import com.uber.auth.Authentication.dtos.PassengerSignupRequestDto;
 import com.uber.auth.Authentication.services.AuthService;
 import com.uber.auth.Authentication.services.JwtService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,10 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -26,13 +25,11 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final Environment environment;
 
-    public AuthController(AuthService authService, JwtService jwtService, AuthenticationManager authenticationManager, Environment environment) {
+    public AuthController(AuthService authService, JwtService jwtService, AuthenticationManager authenticationManager) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
-        this.environment = environment;
     }
 
     @PostMapping("/signup/passenger")
@@ -52,7 +49,7 @@ public class AuthController {
                                                       .httpOnly(true)
                                                       .secure(false)
                                                       .path("/")
-                                                      .maxAge(Long.parseLong(environment.getProperty("custom.cookie.expiry", "3600")))
+                                                      .maxAge(7 * 24 * 3600)
                                                       .build();
 
                 HttpHeaders headers = new HttpHeaders();
@@ -70,5 +67,15 @@ public class AuthController {
         }
 
         return new ResponseEntity<>("Authentication Fail", HttpStatus.UNAUTHORIZED);
+    }
+
+    @GetMapping("/validate")
+    public ResponseEntity<?> validate(HttpServletRequest request) {
+
+        for (Cookie cookie : request.getCookies()) {
+            System.out.println(cookie.getName() + " :: " + cookie.getValue());
+        }
+
+        return new ResponseEntity<>("success", HttpStatus.OK);
     }
 }
