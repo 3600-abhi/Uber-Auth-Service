@@ -1,81 +1,42 @@
 package com.uber.auth.Authentication.controllers;
 
-import com.uber.auth.Authentication.dtos.AuthRequestDto;
-import com.uber.auth.Authentication.dtos.AuthResponseDto;
-import com.uber.auth.Authentication.dtos.PassengerSignupRequestDto;
+import com.uber.auth.Authentication.dtos.*;
+import com.uber.auth.Authentication.enums.AppConstant;
 import com.uber.auth.Authentication.services.AuthService;
-import com.uber.auth.Authentication.services.JwtService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1/auth/")
 public class AuthController {
 
-    private final AuthService authService;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthService authService;
 
-    public AuthController(AuthService authService, JwtService jwtService, AuthenticationManager authenticationManager) {
-        this.authService = authService;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
+    @PostMapping(AppConstant.PASSENGER_SIGNUP)
+    public ResponseEntity<?> passengerSignup(@RequestBody @Valid PassengerSignupRequestDto passengerSignupRequestDto) {
+        return new ResponseEntity<>(authService.passengerSignup(passengerSignupRequestDto), HttpStatus.BAD_REQUEST);
     }
 
-    @PostMapping("/signup/passenger")
-    public ResponseEntity<?> signUp(@RequestBody PassengerSignupRequestDto passengerSignupRequestDto) {
-        return new ResponseEntity<>(this.authService.passengerSignup(passengerSignupRequestDto), HttpStatus.BAD_REQUEST);
+    @PostMapping(AppConstant.PASSENGER_SIGNIN)
+    public ResponseEntity<SignInResponseDto> passengerSignIn(@RequestBody @Valid SignInRequestDto signInRequestDto) {
+        return authService.passengerSignIn(signInRequestDto);
     }
 
-    @PostMapping("/signin/passenger")
-    public ResponseEntity<?> signIn(@RequestBody AuthRequestDto authRequestDto) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDto.getEmail(), authRequestDto.getPassword()));
-
-            if (authentication.isAuthenticated()) {
-                String jwtToken = jwtService.createToken(authRequestDto.getEmail());
-
-                ResponseCookie cookie = ResponseCookie.from("JwtToken", jwtToken)
-                                                      .httpOnly(true)
-                                                      .secure(false)
-                                                      .path("/")
-                                                      .maxAge(7 * 24 * 3600)
-                                                      .build();
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.set(HttpHeaders.SET_COOKIE, cookie.toString());
-
-                AuthResponseDto authResponseDto = AuthResponseDto.builder()
-                                                                 .success(true)
-                                                                 .build();
-
-                return new ResponseEntity<>(authResponseDto, headers, HttpStatus.OK);
-            }
-
-        } catch (BadCredentialsException e) {
-            return new ResponseEntity<>("Invalid Credentials", HttpStatus.UNAUTHORIZED);
-        }
-
-        return new ResponseEntity<>("Authentication Fail", HttpStatus.UNAUTHORIZED);
+    @PostMapping(AppConstant.DRIVER_SIGNUP)
+    public ResponseEntity<DriverDto> driverSignup(@RequestBody @Valid DriverSignupRequestDto driverSignupRequestDto) {
+        return new ResponseEntity<>(authService.driverSignup(driverSignupRequestDto), HttpStatus.CREATED);
     }
 
-    @GetMapping("/validate")
-    public ResponseEntity<?> validate(HttpServletRequest request) {
-
-        for (Cookie cookie : request.getCookies()) {
-            System.out.println(cookie.getName() + " :: " + cookie.getValue());
-        }
-
-        return new ResponseEntity<>("success", HttpStatus.OK);
+    @PostMapping(AppConstant.DRIVER_SIGNIN)
+    public ResponseEntity<SignInResponseDto> driverSignIn(@RequestBody SignInRequestDto signInRequestDto) {
+        return authService.driverSignIn(signInRequestDto);
     }
+
 }

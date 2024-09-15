@@ -31,8 +31,10 @@ public class SecurityConfig implements WebMvcConfigurer {
         return httpSecurity.csrf(csrf -> csrf.disable())
                            .cors(cors -> cors.disable())
                            .authorizeHttpRequests(auth ->
-                                   auth.requestMatchers("/api/v1/auth/signup/*").permitAll()
-                                       .requestMatchers("/api/v1/auth/signin/*").permitAll()
+                                   auth.requestMatchers("/api/v1/auth/passengerSignup").permitAll()
+                                       .requestMatchers("/api/v1/auth/passengerSignIn").permitAll()
+                                       .requestMatchers("/api/v1/auth/driverSignup").permitAll()
+                                       .requestMatchers("/api/v1/auth/driverSignIn").permitAll()
                                        .requestMatchers("/api/v1/auth/validate").authenticated())
                            .authenticationProvider(authenticationProvider())
                            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

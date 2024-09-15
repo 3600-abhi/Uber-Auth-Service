@@ -3,6 +3,7 @@ server:
 
 
 custom:
+  ignore-auth-uri: /api/v1/auth/passengerSignIn,/api/v1/auth/passengerSignup,/api/v1/auth/driverSignup,/api/v1/auth/driverSignIn
   jwt:
     expiry: 3600 # In seconds
     secret: axisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxisaxis

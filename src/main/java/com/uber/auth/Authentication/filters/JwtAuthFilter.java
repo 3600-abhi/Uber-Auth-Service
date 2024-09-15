@@ -8,15 +8,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -28,15 +24,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    private final JwtService jwtService;
+    @Autowired
+    private JwtService jwtService;
 
-    public JwtAuthFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
+    @Value("${custom.ignore-auth-uri}")
+    private String ignoreAuthUri;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         String jwtToken = null;
 
         if (request.getCookies() != null) {
@@ -71,6 +67,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String requestUri = request.getRequestURI();
-        return requestUri.equals("/api/v1/auth/signup/passenger") || requestUri.equals("/api/v1/auth/signin/passenger");
+        String[] ignoreAuthUriList = ignoreAuthUri.split(",");
+
+        for (String uri : ignoreAuthUriList) {
+            if (uri.equals(requestUri)) return true;
+        }
+
+        return false;
     }
 }
