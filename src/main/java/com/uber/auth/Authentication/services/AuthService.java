@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 public interface AuthService {
     public PassengerDto passengerSignup(PassengerSignupRequestDto passengerSignupRequestDto);
 
-    public ResponseEntity<SignInResponseDto> passengerSignIn(SignInRequestDto signInRequestDto);
+    public ResponseEntity<PassengerSignInResponseDto> passengerSignIn(SignInRequestDto signInRequestDto);
 
     public DriverDto driverSignup(DriverSignupRequestDto driverSignupRequestDto);
 
-    public ResponseEntity<SignInResponseDto> driverSignIn(SignInRequestDto signInRequestDto);
+    public ResponseEntity<DriverSignInResponseDto> driverSignIn(SignInRequestDto signInRequestDto);
 }

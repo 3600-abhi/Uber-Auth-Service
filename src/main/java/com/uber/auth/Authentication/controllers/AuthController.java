@@ -25,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping(AppConstant.PASSENGER_SIGNIN)
-    public ResponseEntity<SignInResponseDto> passengerSignIn(@RequestBody @Valid SignInRequestDto signInRequestDto) {
+    public ResponseEntity<PassengerSignInResponseDto> passengerSignIn(@RequestBody @Valid SignInRequestDto signInRequestDto) {
         return authService.passengerSignIn(signInRequestDto);
     }
 
@@ -35,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping(AppConstant.DRIVER_SIGNIN)
-    public ResponseEntity<SignInResponseDto> driverSignIn(@RequestBody SignInRequestDto signInRequestDto) {
+    public ResponseEntity<DriverSignInResponseDto> driverSignIn(@RequestBody SignInRequestDto signInRequestDto) {
         return authService.driverSignIn(signInRequestDto);
     }
 

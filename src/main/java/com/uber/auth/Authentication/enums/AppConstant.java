@@ -5,4 +5,6 @@ public class AppConstant {
     public static final String PASSENGER_SIGNIN = "passengerSignIn";
     public static final String DRIVER_SIGNIN = "driverSignIn";
     public static final String DRIVER_SIGNUP = "driverSignup";
+
+    public static final String JWT_TOKEN_CONST = "JwtToken";
 }

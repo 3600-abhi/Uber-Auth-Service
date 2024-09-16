@@ -1,6 +1,7 @@
 package com.uber.auth.Authentication.services;
 
 import com.uber.auth.Authentication.dtos.*;
+import com.uber.auth.Authentication.enums.AppConstant;
 import com.uber.auth.Authentication.exception.AppException;
 import com.uber.auth.Authentication.models.Driver;
 import com.uber.auth.Authentication.models.Passenger;
@@ -17,6 +18,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -44,14 +47,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<SignInResponseDto> passengerSignIn(SignInRequestDto signInRequestDto) {
+    public ResponseEntity<PassengerSignInResponseDto> passengerSignIn(SignInRequestDto signInRequestDto) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequestDto.getEmail(), signInRequestDto.getPassword()));
 
             if (authentication.isAuthenticated()) {
                 String jwtToken = jwtService.createToken(signInRequestDto.getEmail());
 
-                ResponseCookie cookie = ResponseCookie.from("JwtToken", jwtToken)
+                ResponseCookie cookie = ResponseCookie.from(AppConstant.JWT_TOKEN_CONST, jwtToken)
                                                       .httpOnly(true)
                                                       .secure(false)
                                                       .path("/")
@@ -61,11 +64,11 @@ public class AuthServiceImpl implements AuthService {
                 HttpHeaders headers = new HttpHeaders();
                 headers.set(HttpHeaders.SET_COOKIE, cookie.toString());
 
-                SignInResponseDto signInResponseDto = SignInResponseDto.builder()
-                                                                       .success(true)
-                                                                       .build();
+                Optional<Passenger> passenger = passengerRepository.findPassengerByEmail(signInRequestDto.getEmail());
 
-                return new ResponseEntity<>(signInResponseDto, headers, HttpStatus.OK);
+                PassengerSignInResponseDto passengerSignInResponseDto = PassengerSignInResponseDto.from(passenger.get());
+
+                return new ResponseEntity<>(passengerSignInResponseDto, headers, HttpStatus.OK);
             }
 
         } catch (BadCredentialsException e) {
@@ -83,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<SignInResponseDto> driverSignIn(SignInRequestDto signInRequestDto) {
+    public ResponseEntity<DriverSignInResponseDto> driverSignIn(SignInRequestDto signInRequestDto) {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequestDto.getEmail(), signInRequestDto.getPassword()));
 
@@ -100,11 +103,11 @@ public class AuthServiceImpl implements AuthService {
                 HttpHeaders headers = new HttpHeaders();
                 headers.set(HttpHeaders.SET_COOKIE, cookie.toString());
 
-                SignInResponseDto signInResponseDto = SignInResponseDto.builder()
-                                                                       .success(true)
-                                                                       .build();
+                Optional<Driver> driver = driverRepository.findDriverByEmail(signInRequestDto.getEmail());
 
-                return new ResponseEntity<>(signInResponseDto, headers, HttpStatus.OK);
+                DriverSignInResponseDto driverSignInResponseDto = DriverSignInResponseDto.from(driver.get());
+
+                return new ResponseEntity<>(driverSignInResponseDto, headers, HttpStatus.OK);
             }
 
         } catch (BadCredentialsException e) {

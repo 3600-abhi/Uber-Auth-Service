@@ -15,14 +15,12 @@ public class PassengerDto {
 
     public static PassengerDto from(Passenger passenger) {
 
-        PassengerDto passengerDto = PassengerDto.builder()
-                                                .id(passenger.getId())
-                                                .name(passenger.getName())
-                                                .email(passenger.getEmail())
-                                                .password(passenger.getPassword())
-                                                .phoneNumber(passenger.getPhoneNumber())
-                                                .build();
-
-        return passengerDto;
+        return PassengerDto.builder()
+                           .id(passenger.getId())
+                           .name(passenger.getName())
+                           .email(passenger.getEmail())
+                           .password(passenger.getPassword())
+                           .phoneNumber(passenger.getPhoneNumber())
+                           .build();
     }
 }
