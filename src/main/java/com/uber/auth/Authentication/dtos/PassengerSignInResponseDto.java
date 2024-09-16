@@ -9,7 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class PassengerSignInResponseDto {
-    private Long id;
     private String name;
     private String email;
     private String phoneNumber;
@@ -17,7 +16,6 @@ public class PassengerSignInResponseDto {
     public static PassengerSignInResponseDto from(Passenger passenger) {
 
         return PassengerSignInResponseDto.builder()
-                                         .id(passenger.getId())
                                          .name(passenger.getName())
                                          .email(passenger.getEmail())
                                          .phoneNumber(passenger.getPhoneNumber())
