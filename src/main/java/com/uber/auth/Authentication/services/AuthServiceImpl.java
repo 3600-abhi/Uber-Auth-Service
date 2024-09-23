@@ -114,7 +114,7 @@ public class AuthServiceImpl implements AuthService {
             throw new AppException("Invalid Credentials", HttpStatus.BAD_REQUEST);
         }
 
-        throw new AppException("Authentication Fail", HttpStatus.UNAUTHORIZED);
+        throw new AppException("Authentication Failed", HttpStatus.UNAUTHORIZED);
 
     }
 
