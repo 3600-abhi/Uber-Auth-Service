@@ -34,10 +34,6 @@ public class DriverSignInResponseDto {
                                       .email(driver.getEmail())
                                       .licenseNumber(driver.getLicenseNumber())
                                       .aadharCard(driver.getAadharCard())
-                                      .car(driver.getCar())
-                                      .activeCity(driver.getActiveCity())
-                                      .rating(driver.getRating())
-                                      .bookings(driver.getBookings())
                                       .build();
     }
 }
